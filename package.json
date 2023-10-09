@@ -1,0 +1,25 @@
+{
+  "name": "@tekys/app",
+  "version": "0.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/api",
+    "packages/app"
+  ],
+  "scripts": {
+    "yarn": "yarn",
+    "bootstrap": "lerna bootstrap",
+    "bootstrap:prod": "lerna bootstrap -- --frozen-lockfile --non-interactive --production=true --no-optional",
+    "start": "npm run services-check --stream && lerna run start --parallel",
+    "services-check": "lerna run services-check",
+    "clean": "lerna clean --yes && echo 'Removing node_modules, yarn.lock and build...' && find . -name \"node_modules\" -type d -prune -exec rimraf '{}' + && find . -name \"build\" -type d -prune -exec rimraf '{}' +  && test -f yarn.lock && rm yarn.lock"
+  },
+  "dependencies": {
+    "lerna": "^4.0.0",
+    "rimraf": "^2.3.3"
+  },
+  "resolutions": {
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  }
+}
