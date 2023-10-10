@@ -1,13 +1,10 @@
 const express = require("express");
 const cors = require("cors");
 
-const http = require("http");
-const socketIo = require("socket.io");
+const socket = require("socket.io");
 const dbConfig = require("./src/config/db.config");
 
 const app = express();
-const server = http.createServer(app);
-const io = socketIo(server);
 
 var corsOptions = {
   origin: "http://localhost:3000"
@@ -36,32 +33,6 @@ db.mongoose
     process.exit();
   });
 
-// Socket.io logic
-io.on("connection", (socket) => {
-  console.log("::::::::::::::::::::::::::::::::A user connected");
-
-  // Handle when a user sends a chat message
-  socket.on("chat message", (message) => {
-    // Save the message to MongoDB or perform any desired actions
-    // For example, you can create a new message document in your MongoDB collection
-    // and associate it with the user who sent the message
-    const newMessage = new Message({
-      text: message.text,
-      sender: message.sender, // You may need to pass sender information when emitting messages
-    });
-
-    newMessage.save().then(() => {
-      // Broadcast the message to all connected clients
-      io.emit("chat message", newMessage);
-    });
-  });
-
-  // Handle disconnection
-  socket.on("disconnect", () => {
-    console.log("A user disconnected");
-  });
-});
-
 // simple route
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to tekys-demo application." });
@@ -70,10 +41,31 @@ app.get("/", (req, res) => {
 // routes
 require("./src/routes/auth.routes")(app);
 require("./src/routes/user.routes")(app);
+require("./src/routes/message.routes")(app);
 
 // set port, listen for requests
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}.`);
+const server = app.listen(8080, () =>
+  console.log(`Server started on ${8080}`)
+);
+
+const io = socket(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    credentials: true,
+  },
 });
 
+global.onlineUsers = new Map();
+io.on("connection", (socket) => {
+  global.chatSocket = socket;
+  socket.on("add-user", (userId) => {
+    onlineUsers.set(userId, socket.id);
+  });
+
+  socket.on("send-msg", (data) => {
+    const sendUserSocket = onlineUsers.get(data.to);
+    if (sendUserSocket) {
+      socket.to(sendUserSocket).emit("msg-recieve", data.msg);
+    }
+  });
+});

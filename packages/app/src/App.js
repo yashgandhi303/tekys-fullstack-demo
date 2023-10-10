@@ -5,18 +5,13 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
-import Login from "./components/Login";
-import Register from "./components/Register";
-import Home from "./components/Home";
-import Profile from "./components/Profile";
-import User from "./components/User";
+import { Login, Register, Chat, Profile, User } from "./pages";
 
 import { logout } from "./slices/auth";
 
 import EventBus from "./common/EventBus";
 
 const App = () => {
-
   const { user: currentUser } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
@@ -41,26 +36,27 @@ const App = () => {
           <Link to={"/"} className="navbar-brand">
             Tekys
           </Link>
-          <div className="navbar-nav mr-auto">
-            <li className="nav-item">
-              <Link to={"/home"} className="nav-link">
-                Home
-              </Link>
-            </li>
-            {currentUser && (
+          {currentUser && (
+            <div className="navbar-nav mr-auto">
+              <li className="nav-item">
+                <Link to={"/chat"} className="nav-link">
+                  Chat
+                </Link>
+              </li>
+
               <li className="nav-item">
                 <Link to={"/user"} className="nav-link">
                   User
                 </Link>
               </li>
-            )}
-          </div>
+            </div>
+          )}
 
           {currentUser ? (
             <div className="navbar-nav ml-auto">
               <li className="nav-item">
                 <Link to={"/profile"} className="nav-link">
-                  {currentUser.username}
+                  {currentUser?.username}
                 </Link>
               </li>
               <li className="nav-item">
@@ -88,8 +84,8 @@ const App = () => {
 
         <div className="container mt-3">
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/home" element={<Home />} />
+            <Route path="/" element={<Chat />} />
+            <Route path="/chat" element={<Chat />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/profile" element={<Profile />} />

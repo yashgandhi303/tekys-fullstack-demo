@@ -25,6 +25,10 @@ const login = (username, password) => {
     });
 };
 
+const getAllUsers = (currentUser) => {
+  return axios.get(`${API_URL}allusers/${currentUser.id}`);
+}
+
 const logout = () => {
   localStorage.removeItem("user");
   return window.location.push("login");
@@ -39,6 +43,7 @@ const AuthService = {
   login,
   logout,
   getCurrentUser,
+  getAllUsers
 }
 
 export default AuthService;

@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
 
-import UserService from "../services/user.service";
+import { UserService } from "../services";
 import EventBus from "../common/EventBus";
 
-const BoardUser = () => {
+const User = () => {
   const [content, setContent] = useState(null);
 
   useEffect(() => {
-    UserService.getUserBoard()?.then(
+    UserService.getUser()?.then(
       (response) => {
-        console.log({ response: response })
         setContent(response.data.user);
       },
       (error) => {
@@ -21,7 +20,6 @@ const BoardUser = () => {
           error.toString();
 
         setContent(_content);
-        console.log('',{ err: error.response.status })
         if (error.response && 
             (error.response.status === 401 || error.response.status === 403)
           ) {
@@ -41,4 +39,4 @@ const BoardUser = () => {
   );
 };
 
-export default BoardUser;
+export default User;

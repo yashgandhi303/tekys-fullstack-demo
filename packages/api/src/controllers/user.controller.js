@@ -1,11 +1,7 @@
 const db = require("../models");
 const User = db.user;
 
-exports.allAccess = (req, res) => {
-  res.status(200).send({ success: true, message: "Public Content" });
-};
-
-exports.userBoard = (req, res) => {
+exports.getUser = (req, res) => {
   // Find the user by userId in your database
   User.findById(req.userId, (err, user) => {
     if (err) {
